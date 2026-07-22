@@ -392,10 +392,11 @@ def build_notification(rows: list[dict], mode: str) -> str | None:
 
 def build_daily_digest(rows: list[dict], mode: str) -> str | None:
     strong = sorted([row for row in rows if row["score"] >= DEFAULT_NOTIFY_SCORE], key=lambda r: r["score"], reverse=True)
-    if not strong:
-        return None
-    top = strong[:5]
     lines = [f"{mode.title()} daily digest", ""]
+    if not strong:
+        lines.append("- No strong items yet.")
+        return "\n".join(lines)
+    top = strong[:5]
     for row in top:
         lines.append(f"- {row['title']} ({row['score']})")
         if row.get("build_type"):
@@ -429,6 +430,9 @@ def run_mode(mode: str) -> None:
             notification = build_notification(rows, submode)
             if notification and telegram_configured():
                 send_telegram_message(notification)
+            digest = build_daily_digest(rows, submode)
+            if digest and telegram_configured():
+                send_telegram_message(digest)
         summary = render_action_summary(combined)
         (OUT_DIR / f"summary-{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}.md").write_text(summary, encoding="utf-8")
         print(summary)
@@ -438,6 +442,7 @@ def run_mode(mode: str) -> None:
                 send_telegram_message(top_notification)
             daily_digest = build_daily_digest(combined, "combined")
             if daily_digest:
+                send_telegram_message(daily_digest)
                 (OUT_DIR / f"digest-{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}.md").write_text(daily_digest, encoding="utf-8")
     else:
         items = collect(mode, sources)
@@ -450,7 +455,8 @@ def run_mode(mode: str) -> None:
         if notification and telegram_configured():
             send_telegram_message(notification)
         digest = build_daily_digest(rows, mode)
-        if digest:
+        if digest and telegram_configured():
+            send_telegram_message(digest)
             (OUT_DIR / f"digest-{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}.md").write_text(digest, encoding="utf-8")
     save_state(state)
 
