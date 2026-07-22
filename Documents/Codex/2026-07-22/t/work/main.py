@@ -188,20 +188,37 @@ def score_opportunity(item: Item) -> tuple[int, list[str]]:
     reasons: list[str] = []
     positive = {
         r"\bpay\b": 18,
+        r"\bi pay\b": 24,
+        r"\bpaid\b": 14,
+        r"\bexpensive\b": 16,
+        r"\btoo expensive\b": 24,
         r"\bpricing\b": 10,
+        r"\bsubscription\b": 12,
         r"\balternative\b": 14,
+        r"\bcheaper\b": 16,
+        r"\bcheaper alternative\b": 24,
         r"\bwish\b": 12,
+        r"\bi wish\b": 18,
         r"\bmissing\b": 10,
+        r"\bwould love\b": 14,
         r"\bmanual\b": 8,
+        r"\bcopy paste\b": 18,
+        r"\bspreadsheet\b": 14,
+        r"\brepeat(ed|s|ing)\b": 12,
         r"\bannoying\b": 8,
+        r"\bfrustrating\b": 10,
         r"\bneed\b": 6,
         r"\blooking for\b": 14,
+        r"\blooking for alternative\b": 24,
+        r"\bdoes anyone know\b": 10,
         r"\bfeature request\b": 16,
+        r"\bwhy doesn't anyone build\b": 24,
     }
     negative = {r"\bshowcase\b": 5, r"\blaunch\b": 4}
     for pattern, points in positive.items():
-        if re.search(pattern, text):
-            score += points
+        matches = len(re.findall(pattern, text))
+        if matches:
+            score += points * matches
             reasons.append(pattern.replace("\\b", ""))
     for pattern, points in negative.items():
         if re.search(pattern, text):
@@ -255,11 +272,11 @@ def evaluate_opportunity(item: Item) -> OpportunityProfile:
     text = f"{item.title} {item.summary}".lower()
     score, reasons = score_opportunity(item)
     urgency = 0
-    if any(term in text for term in ["every week", "every day", "always", "repeatedly", "again", "still"]):
+    if any(term in text for term in ["every week", "every day", "always", "repeatedly", "again", "still", "each month", "every month"]):
         urgency += 20
-    if any(term in text for term in ["pay", "pricing", "alternative", "missing", "wish"]):
+    if any(term in text for term in ["pay", "pricing", "alternative", "missing", "wish", "expensive", "subscription"]):
         urgency += 15
-    if any(term in text for term in ["frustrated", "annoying", "hate", "broken", "slow"]):
+    if any(term in text for term in ["frustrated", "annoying", "hate", "broken", "slow", "manual", "copy paste"]):
         urgency += 10
     confidence = min(100, score + urgency + (10 if reasons else 0))
     build_type = infer_build_type(text)
@@ -338,6 +355,12 @@ def render_report(mode: str, rows: list[dict]) -> str:
     if not rows:
         lines.append("No items found.")
         return "\n".join(lines)
+    if mode == "opportunity":
+        top = max(rows, key=lambda r: r["score"])
+        lines.append(f"Top signal: {top['title']} ({top['score']})")
+        if top.get("build_type"):
+            lines.append(f"Best fit: {top['build_type']} | {top.get('monetization', 'n/a')}")
+        lines.append("")
     for row in sorted(rows, key=lambda r: r["score"], reverse=True)[:20]:
         lines.append(f"## {row['title']}")
         lines.append(f"- Score: {row['score']}")
@@ -369,6 +392,8 @@ def render_action_summary(rows: list[dict]) -> str:
             lines.append(f"- Likely form: {top_opp['build_type']}")
         if top_opp.get("monetization"):
             lines.append(f"- Money path: {top_opp['monetization']}")
+        if top_opp.get("confidence") is not None:
+            lines.append(f"- Confidence: {top_opp['confidence']}/100")
     if top_tech:
         lines.append(f"- Best tech signal: {top_tech['title']} ({top_tech['score']})")
     if not top_opp and not top_tech:

@@ -6,6 +6,11 @@
       "url": "https://hnrss.org/frontpage"
     },
     {
+      "name": "Hacker News Ask",
+      "type": "rss",
+      "url": "https://hnrss.org/ask"
+    },
+    {
       "name": "Indie Hackers",
       "type": "rss",
       "url": "https://www.indiehackers.com/feed"
@@ -19,6 +24,31 @@
       "name": "Reddit Entrepreneur",
       "type": "rss",
       "url": "https://www.reddit.com/r/Entrepreneur/.rss"
+    },
+    {
+      "name": "Reddit Small Business Alternatives",
+      "type": "rss",
+      "url": "https://www.reddit.com/r/smallbusiness/search.rss?q=alternative&restrict_sr=1&sort=new"
+    },
+    {
+      "name": "Reddit Build a PCF",
+      "type": "rss",
+      "url": "https://www.reddit.com/r/SaaS/search.rss?q=wish%20this%20had&restrict_sr=1&sort=new"
+    },
+    {
+      "name": "Reddit Pain Points",
+      "type": "rss",
+      "url": "https://www.reddit.com/search.rss?q=%22I%20pay%22%20OR%20%22looking%20for%20alternative%22%20OR%20%22wish%20there%20was%22"
+    },
+    {
+      "name": "Reddit Productivity",
+      "type": "rss",
+      "url": "https://www.reddit.com/r/productivity/search.rss?q=manual%20workflow&restrict_sr=1&sort=new"
+    },
+    {
+      "name": "Reddit Freelance",
+      "type": "rss",
+      "url": "https://www.reddit.com/r/freelance/search.rss?q=too%20expensive&restrict_sr=1&sort=new"
     }
   ],
   "tech": [
@@ -36,6 +66,16 @@
       "name": "GitHub Trending",
       "type": "html",
       "url": "https://github.com/trending"
+    },
+    {
+      "name": "Anthropic News",
+      "type": "rss",
+      "url": "https://www.anthropic.com/news/rss.xml"
+    },
+    {
+      "name": "Google AI Blog",
+      "type": "rss",
+      "url": "https://blog.google/technology/ai/rss/"
     }
   ]
 }
