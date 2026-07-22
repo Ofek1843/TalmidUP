@@ -1,0 +1,41 @@
+{
+  "opportunity": [
+    {
+      "name": "Hacker News",
+      "type": "rss",
+      "url": "https://hnrss.org/frontpage"
+    },
+    {
+      "name": "Indie Hackers",
+      "type": "rss",
+      "url": "https://www.indiehackers.com/feed"
+    },
+    {
+      "name": "Reddit SaaS",
+      "type": "rss",
+      "url": "https://www.reddit.com/r/SaaS/.rss"
+    },
+    {
+      "name": "Reddit Entrepreneur",
+      "type": "rss",
+      "url": "https://www.reddit.com/r/Entrepreneur/.rss"
+    }
+  ],
+  "tech": [
+    {
+      "name": "OpenAI Blog",
+      "type": "rss",
+      "url": "https://openai.com/blog/rss.xml"
+    },
+    {
+      "name": "Product Hunt",
+      "type": "rss",
+      "url": "https://www.producthunt.com/feed"
+    },
+    {
+      "name": "GitHub Trending",
+      "type": "html",
+      "url": "https://github.com/trending"
+    }
+  ]
+}
