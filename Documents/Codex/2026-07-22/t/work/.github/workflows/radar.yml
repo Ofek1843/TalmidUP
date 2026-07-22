@@ -1,0 +1,65 @@
+name: Radar
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+    - cron: "0 10 * * *"
+    - cron: "0 16 * * *"
+    - cron: "0 18 * * *"
+    - cron: "30 8 * * 1,4,6"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "What to run"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - opportunity
+          - tech
+          - both
+
+jobs:
+  opportunity:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && (inputs.mode == 'opportunity' || inputs.mode == 'both') || github.event_name == 'schedule' && (github.event.schedule == '0 6 * * *' || github.event.schedule == '0 10 * * *' || github.event.schedule == '0 16 * * *' || github.event.schedule == '0 18 * * *')
+    env:
+      RADAR_DATA_DIR: ${{ github.workspace }}/work/data
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: work/data
+          key: radar-data-${{ github.run_id }}
+          restore-keys: |
+            radar-data-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run opportunity radar
+        working-directory: work
+        run: python main.py run --mode opportunity
+
+  tech:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && (inputs.mode == 'tech' || inputs.mode == 'both') || github.event_name == 'schedule' && github.event.schedule == '30 8 * * 1,4,6'
+    env:
+      RADAR_DATA_DIR: ${{ github.workspace }}/work/data
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: work/data
+          key: radar-data-${{ github.run_id }}
+          restore-keys: |
+            radar-data-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run tech radar
+        working-directory: work
+        run: python main.py run --mode tech
